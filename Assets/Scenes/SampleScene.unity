@@ -455,7 +455,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 2046228059}
   m_Father: {fileID: 1977186455}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1732501548
@@ -543,7 +544,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Weight: 1
-  m_Effectors: []
+  m_Effectors:
+  - m_Transform: {fileID: 2046228059}
+    m_Style:
+      shape: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+      color: {r: 1, g: 0, b: 0, a: 0.5}
+      size: 0.1
+      position: {x: 0, y: 0, z: 0}
+      rotation: {x: 0, y: 0, z: 0}
+    m_Visible: 1
 --- !u!114 &1977186454
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -638,12 +647,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2046228058}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0.011064174, y: 0.75888854, z: -7.7119074}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1732501547}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &9171100037460255
 GameObject:
@@ -935,6 +944,7 @@ GameObject:
   - component: {fileID: 5866666021359174263}
   - component: {fileID: 5866666021359174265}
   - component: {fileID: 5866666021359174264}
+  - component: {fileID: 5866666021359174266}
   m_Layer: 0
   m_Name: Main Character
   m_TagString: Untagged
@@ -2218,6 +2228,19 @@ MonoBehaviour:
   - m_Rig: {fileID: 1977186453}
     m_Active: 1
   m_Effectors: []
+--- !u!114 &5866666021359174266
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 919132148638302903}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ffa2df97c6767c142bd32e4b6da860f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  aimTargetTransform: {fileID: 2046228059}
 --- !u!4 &5901452234705537678
 Transform:
   m_ObjectHideFlags: 0
@@ -3040,4 +3063,3 @@ SceneRoots:
   - {fileID: 410087041}
   - {fileID: 832575519}
   - {fileID: 543450653176502285}
-  - {fileID: 2046228059}
