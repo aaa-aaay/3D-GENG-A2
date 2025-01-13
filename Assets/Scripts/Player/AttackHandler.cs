@@ -1,3 +1,4 @@
+using Cinemachine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,6 +6,8 @@ using UnityEngine;
 public class AttackHandler : MonoBehaviour
 {
     [SerializeField] private SphereCollider _collider;
+    [SerializeField]
+    private CinemachineImpulseSource source;
 
     // Start is called before the first frame update
     void Start()
@@ -22,6 +25,8 @@ public class AttackHandler : MonoBehaviour
             {
                 _collider.enabled = false;
                 Debug.Log(hitColliders[i].gameObject.name);
+
+                source.GenerateImpulse(Camera.main.transform.forward);
             }
         }
     }

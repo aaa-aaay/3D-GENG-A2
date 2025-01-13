@@ -11,6 +11,8 @@ public class PlayerController : MonoBehaviour
     private Animator _animator;
     private CharacterController _cc;
 
+    [SerializeField] private GameObject cameraTarget;
+
     void Start()
     {
         _animator = GetComponent<Animator>();
@@ -27,12 +29,16 @@ public class PlayerController : MonoBehaviour
         if (moveDirection.magnitude > 0)
         {
             _animator.SetBool("IsWalking", true);
+
+            moveDirection = Quaternion.AngleAxis(Camera.main.transform.eulerAngles.y, Vector3.up) * moveDirection;
             Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 3f);
+
+
         }
         else if (_inputActions["Attack"].IsPressed())
         {
-            _animator.SetBool("IsAttack", true);
+            _animator.SetBool("IsAttack", true);    
         }
         else
         {
@@ -40,6 +46,7 @@ public class PlayerController : MonoBehaviour
             _animator.SetBool("IsAttack", false);
 
         }
+
 
     }
     private void OnAnimatorMove()
