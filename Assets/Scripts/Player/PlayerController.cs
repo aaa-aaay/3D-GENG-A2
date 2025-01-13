@@ -8,16 +8,18 @@ public class PlayerController : MonoBehaviour
     private PlayerInput _playerInput;
     private InputActionAsset _inputActions;
 
-    private Animator _animator;
+    //private Animator _animator;
     private CharacterController _cc;
+    private AnimationManager _animManager;
 
     [SerializeField] private GameObject cameraTarget;
 
     void Start()
     {
-        _animator = GetComponent<Animator>();
+       // _animator = GetComponent<Animator>();
         _cc = GetComponent<CharacterController>();
         _playerInput = GetComponent<PlayerInput>();
+        _animManager = GetComponent<AnimationManager>();
         _inputActions = _playerInput.actions;
     }
     void Update()
@@ -28,7 +30,8 @@ public class PlayerController : MonoBehaviour
 
         if (moveDirection.magnitude > 0)
         {
-            _animator.SetBool("IsWalking", true);
+           // _animator.SetBool("IsWalking", true);
+            _animManager.PlayAnimation(AnimationManager.AniState.RUN);
 
             moveDirection = Quaternion.AngleAxis(Camera.main.transform.eulerAngles.y, Vector3.up) * moveDirection;
             Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
@@ -38,20 +41,26 @@ public class PlayerController : MonoBehaviour
         }
         else if (_inputActions["Attack"].IsPressed())
         {
-            _animator.SetBool("IsAttack", true);    
+           // _animator.SetBool("IsAttack", true);
+            _animManager.PlayAnimation(AnimationManager.AniState.ATTACK);
+        }
+        else if (_inputActions["Roll"].IsPressed())
+        {
+            _animManager.PlayAnimation(AnimationManager.AniState.ROLL);
+
         }
         else
         {
-            _animator.SetBool("IsWalking", false);
-            _animator.SetBool("IsAttack", false);
+            _animManager.PlayAnimation(AnimationManager.AniState.IDLE);
+
+            //_animator.SetBool("IsWalking", false);
+            //_animator.SetBool("IsAttack", false);
 
         }
-
-
     }
     private void OnAnimatorMove()
     {
-        Vector3 velocity = _animator.deltaPosition;
+        Vector3 velocity = _animManager.animator.deltaPosition;
         _cc.Move(velocity);
     }
 }
