@@ -12,7 +12,7 @@ public class PlayerController : MonoBehaviour
     private CharacterController _cc;
     private AnimationManager _animManager;
 
-    [SerializeField] private GameObject cameraTarget;
+    private bool isAttacking, isjumping, isRolling;
 
     void Start()
     {
@@ -30,37 +30,39 @@ public class PlayerController : MonoBehaviour
 
         if (moveDirection.magnitude > 0)
         {
-           // _animator.SetBool("IsWalking", true);
             _animManager.PlayAnimation(AnimationManager.AniState.RUN);
 
             moveDirection = Quaternion.AngleAxis(Camera.main.transform.eulerAngles.y, Vector3.up) * moveDirection;
             Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 3f);
 
-
         }
-        else if (_inputActions["Attack"].IsPressed())
+        else if (_inputActions["Attack"].WasPressedThisFrame())
         {
-           // _animator.SetBool("IsAttack", true);
             _animManager.PlayAnimation(AnimationManager.AniState.ATTACK);
+            isAttacking = true;
+            Invoke("AttackComplete", _animManager.animator.GetCurrentAnimatorClipInfo(0).Length);
         }
         else if (_inputActions["Roll"].IsPressed())
         {
             _animManager.PlayAnimation(AnimationManager.AniState.ROLL);
+            isRolling = true;
 
         }
-        else
+        else if(!isAttacking && !isRolling)
         {
+
             _animManager.PlayAnimation(AnimationManager.AniState.IDLE);
-
-            //_animator.SetBool("IsWalking", false);
-            //_animator.SetBool("IsAttack", false);
-
         }
     }
     private void OnAnimatorMove()
     {
         Vector3 velocity = _animManager.animator.deltaPosition;
         _cc.Move(velocity);
+    }
+
+    void AttackComplete()
+    {
+        isAttacking = false;
     }
 }
