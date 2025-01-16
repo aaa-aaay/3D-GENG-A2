@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -12,10 +13,17 @@ public class PlayerController : MonoBehaviour
     private CharacterController _cc;
     // private AnimationManager _animManager;
 
-    float velocity;
+
     [SerializeField] private float acceleration = 0.1f;
     [SerializeField] private float deceleration = 0.5f;
-    InputAction attackAction, sprintAction, dodgeAction;
+    [SerializeField] private float jumpHeight = 2.0f;
+
+
+    InputAction attackAction, sprintAction, dodgeAction, jumpAction, blockAction;
+
+    private float movementVelocity;
+    private Vector3 jumpVelocity;
+    private float gravity = -9.81f;
 
     void Start()
     {
@@ -26,6 +34,8 @@ public class PlayerController : MonoBehaviour
         attackAction = _inputActions["Attack"];
         sprintAction = _inputActions["Sprint"];
         dodgeAction = _inputActions["Roll"];
+        jumpAction = _inputActions["Jump"];
+        blockAction = _inputActions["Block"];
 
     }
     void Update()
@@ -34,6 +44,15 @@ public class PlayerController : MonoBehaviour
 
         if (attackAction.WasPressedThisFrame()) _animator.SetTrigger("Punch");
         if (dodgeAction.WasPressedThisFrame()) _animator.SetTrigger("Roll");
+        if (blockAction.IsInProgress())
+        {
+            _animator.SetBool("Isblocking", true);
+        }
+        else
+        {
+            _animator.SetBool("Isblocking", false);
+
+        }
     }
 
     private void Movements()
@@ -54,23 +73,35 @@ public class PlayerController : MonoBehaviour
             _animator.SetBool("IsWalking", false);
         }
 
-
-        if (sprintAction.IsPressed() && velocity < 5.0)
-        {
-            velocity += Time.deltaTime * acceleration;
+        //Jumping
+        if (_cc.isGrounded && jumpVelocity.y < 0) {
+            jumpVelocity.y = -2f;
         }
-        else if (!sprintAction.IsPressed() && velocity > 0)
+        jumpVelocity.y += gravity * Time.deltaTime;
+
+        if (jumpAction.WasPressedThisFrame() && _cc.isGrounded) {
+            jumpVelocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
+            _animator.SetBool("Jump", true);
+        }
+
+
+
+        if (sprintAction.IsPressed() && movementVelocity < 5.0)
         {
-            velocity -= Time.deltaTime * deceleration;
+            movementVelocity += Time.deltaTime * acceleration;
+        }
+        else if (!sprintAction.IsPressed() && movementVelocity > 0)
+        {
+            movementVelocity -= Time.deltaTime * deceleration;
             _animator.SetBool("IsRunning", false);
         }
 
-        _animator.SetFloat("Velocity", velocity);
+        _animator.SetFloat("Velocity", movementVelocity);
     }
 
     private void OnAnimatorMove()
     {
         Vector3 velocity = _animator.deltaPosition;
-        _cc.Move(velocity);
+        _cc.Move(velocity + (jumpVelocity * Time.deltaTime));
     }
 }
