@@ -24,6 +24,12 @@ public class PlayerController : MonoBehaviour
     private float movementVelocity;
     private Vector3 jumpVelocity;
     private float gravity = -9.81f;
+    private bool _isAttack = false;
+    private int _attackStep = 0;
+
+    private List<IEnumerator> _attackQueue = new List<IEnumerator>();
+    private string[] _attackNames = { "Attack1", "Attack2", "Attack3" };
+
 
     void Start()
     {
@@ -42,8 +48,19 @@ public class PlayerController : MonoBehaviour
     {
         Movements();
 
-        if (attackAction.WasPressedThisFrame()) _animator.SetTrigger("Punch");
-        if (dodgeAction.WasPressedThisFrame()) _animator.SetTrigger("Roll");
+        if (attackAction.WasPressedThisFrame())
+        {
+            if (_attackQueue.Count < 3)
+            {
+                _attackQueue.Add(PerformAttack());
+            }
+            if (_attackQueue.Count == 1)
+            {
+                StartCombo();
+
+            }
+        }
+            if (dodgeAction.WasPressedThisFrame()) _animator.SetTrigger("Roll");
         if (blockAction.IsInProgress())
         {
             _animator.SetBool("Isblocking", true);
@@ -98,6 +115,51 @@ public class PlayerController : MonoBehaviour
 
         _animator.SetFloat("Velocity", movementVelocity);
     }
+
+    private void StartCombo()
+    {
+        _isAttack = true;
+        _animator.SetBool("IsAttack", _isAttack);
+        StartCoroutine(_attackQueue[0]);
+    }
+
+    private IEnumerator PerformAttack()
+    {
+        _attackStep++;
+        _animator.SetInteger("AttackStep", _attackStep);
+
+        while (!IsCurrentAnimationReadyForNextStep(_attackNames[_attackStep - 1]))
+        {
+            yield return null;
+
+        }
+        if(_attackStep >= _attackQueue.Count)
+        {
+            ResetCombo();
+            yield break;
+        }
+        else
+        {
+            StartCoroutine(_attackQueue[_attackStep]);
+        }
+
+    }
+
+    private bool IsCurrentAnimationReadyForNextStep(string name)
+    {
+        AnimatorStateInfo stateInfo = _animator.GetCurrentAnimatorStateInfo(0);
+        return stateInfo.normalizedTime >= 0.7f && stateInfo.IsName(name);
+
+    }
+    private void ResetCombo()
+    {
+        _isAttack = false;
+        _attackStep = 0;
+        _animator.SetInteger("AttackStep", _attackStep);
+        _animator.SetBool("IsAttack", false);
+        _attackQueue.Clear();
+    }
+
 
     private void OnAnimatorMove()
     {
