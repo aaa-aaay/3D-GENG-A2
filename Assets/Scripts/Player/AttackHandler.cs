@@ -1,6 +1,7 @@
 using Cinemachine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using UnityEngine;
 
 public class AttackHandler : MonoBehaviour
@@ -8,7 +9,9 @@ public class AttackHandler : MonoBehaviour
     [SerializeField] private Collider _collider;
     [SerializeField]
     private CinemachineImpulseSource source;
+    [SerializeField] public string sfxName;
 
+    [SerializeField]
     private int damage = 40;
 
     // Start is called before the first frame update
@@ -43,6 +46,7 @@ public class AttackHandler : MonoBehaviour
 
                     damagable.TakeDamage(damage);
                     _collider.enabled = false;
+                    if(source != null)
                     source.GenerateImpulse(Camera.main.transform.forward);
                 }
             }
@@ -51,15 +55,19 @@ public class AttackHandler : MonoBehaviour
 
     public void EnableCollider()
     {
-        Debug.Log("Shit has been called???");
         _collider.enabled = true;
     }
     public void DisableCollider()
     {
         _collider.enabled = false;
     }
+    public void PlayAttackSound()
+    {
+        AudioManager.instance.PlaySFX(sfxName, _collider.gameObject.transform.position);
+    }
 
-    private void OnDrawGizmos()
+
+    private void OnDrawGizmos()   
     {
         BoxCollider boxCollider = _collider as BoxCollider;
         if (boxCollider == null) return;

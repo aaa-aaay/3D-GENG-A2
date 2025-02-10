@@ -10,6 +10,8 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private float attackRange = 2.0f;
     [SerializeField] private float moveSpeed = 3.0f;
     [SerializeField] private float attackCD = 1.0f;
+    [SerializeField] private float chaseRadius = 15.0f;
+    private bool seenPlayer;
 
     private float attackTimer = 0.0f;
     private Animator _animator;
@@ -33,6 +35,8 @@ public class EnemyController : MonoBehaviour
         float distanceFromPlayer = Vector3.Distance(transform.position, target.position);
         if (distanceFromPlayer < lookRadius) {
 
+
+            seenPlayer = true;
             if (distanceFromPlayer > attackRange) {
                 if(_animator.GetCurrentAnimatorClipInfo(0)[0].clip.name != "Z attack1")
                 {
@@ -45,6 +49,7 @@ public class EnemyController : MonoBehaviour
 
             if (distanceFromPlayer < attackRange && attackTimer > attackCD)
             {
+                AudioManager.instance.PlaySFX("ZombieSound", transform.position);
                 agent.speed = 0;
                 attackTimer = 0;
                 _animator.SetTrigger("Attack");
@@ -52,10 +57,21 @@ public class EnemyController : MonoBehaviour
             }
 
         }
+        else if(seenPlayer && distanceFromPlayer < chaseRadius)
+        {
+            _animator.SetBool("IsWalking", true);
+        }
         else
         {
             _animator.SetBool("IsWalking", false);
+            seenPlayer = false;
+            agent.speed = 0;
+            agent.ResetPath();
         }
+
+
+        
+
     }
     private void OnDrawGizmosSelected()
     {
